@@ -1,5 +1,6 @@
 import math
 import pygame
+import time
 
 frameRate = 30
 G = 6.6*(10**(-11))
@@ -21,7 +22,7 @@ class SpaceObject:
     def gravForce(self, sO2):
         global G
         global frameRate
-        distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
+        distance = math.sqrt((self.pos[0]-sO2.pos[0])**float(2)+(self.pos[1]-sO2.pos[1])**float(2)) #Calcualte distance
 
         force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
 
@@ -43,12 +44,13 @@ class SpaceObject:
 
         print(self.vel)
 
+    #Updates displacement
     def displacement(self):
         self.pos[0] = self.pos[0]+self.vel[0]/frameRate
         self.pos[1] = self.pos[1]+self.vel[1]/frameRate
         print(self.pos)
         
-
+#Class for spaceship
 class SpaceShip(SpaceObject):
     direct = 0
     a = True
@@ -61,9 +63,33 @@ class SpaceShip(SpaceObject):
         self.direct = direct
         self.a = True
 
+kg = float(input("Enter the mass in kg of the spaceship"))
+m = float(input("Enter the radius in meters of the spaceship"))
 
 
+ship = SpaceShip([0,0], [0,0], kg, m, 0, False)
+aD = []
 
+while True:
+    print("Input velocity x, velocity y, position x, position y, mass, and radius of the astroid in that order. Enter a letter to quit.")
+    try:
+        a = float(input())
+        b = float(input())
+        c = float(input())
+        d = float(input())
+        e = float(input())
+        f = float(input())
+    except:
+        break
 
+    aD.append(SpaceShip(a, b, c, d, e, f))
+
+while True:
+    for astroid in aD:
+        ship.gravForce(astroid)
+    ship.displacement()
+    print(ship.pos)
+    time.sleep(1000/frameRate)
+    
     
     
