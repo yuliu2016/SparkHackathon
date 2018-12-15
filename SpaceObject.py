@@ -22,22 +22,24 @@ class SpaceObject:
 
         force = (G*m*s02.m)/(distance**2) #Calcualte magnitude of force
 
-        #Calculate direciton
+        #Calculate force
         if(pos[0]>sO2.pos[0]):
             if(pos[1]>sO2.pos[1]):
-                direction1 = math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0]))
+                vel[0] = (vel[0]-math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+                vel[1] = (vel[1]-math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
             else:
-                direction1 = 2*math.pi-math.atan((sO2.pos[1]-pos[1])/(pos[0]-sO2.pos[0]))
+                vel[0] = (vel[0]-math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+                vel[1] = (vel[1]+math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
         else:
             if(pos[1]>sO2.pos[1]):
-                direction1 = math.pi/2+math.atan((pos[1]-sO2.pos[1])/(sO2.pos[0]-pos[0]))
+                vel[0] = (vel[0]+math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+                vel[1] = (vel[1]-math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
             else:
-                direction1 = math.pi+math.atan((sO2.pos[1]-pos[1])/(sO2.pos[0]-pos[0]))
+                vel[0] = (vel[0]+math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+                vel[1] = (vel[1]+math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
                 
-        if direction1>math.pi:
-            direciton2 = direction1-math.pi
-        else:
-            direction2 = direction1+pi
+
+        
         
 
 class SpaceShip(SpaceObject):
