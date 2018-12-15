@@ -20,6 +20,25 @@ class Spaceship(SpaceObjectState):
         aac(surface, [192, 192, 255], [self.pos_x, self.pos_y], self.radius // 4 * 3)
         aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius // 4 * 2)
 
+    def avoid_objects(self, *objects: SpaceObjectState):
+        mags = []
+        angles = []
+        for object in objects:
+            dist = math.sqrt((object.pos_x - self.pos_x) ** 2 + (object.pos_y - self.pos_y) ** 2)\
+                   - self.radius - object.radius
+            mags.append(1 / dist ** 2)
+            angles.append(math.degrees(math.atan2(object.pos_y - self.pos_y, object.pos_x - self.pos_x)))
+
+        x = y = 0.
+        for angle, weight in zip(angles, mags):
+            x += math.cos(math.radians(angle)) * weight
+            y += math.sin(math.radians(angle)) * weight
+
+        angle = math.degrees(math.atan2(y, x))
+
+        return angle
+
+
 
 class Asteroid(SpaceObjectState):
     def __init__(self, li):
@@ -83,6 +102,7 @@ def update_heat_map():
 
 
 show_hm = False
+control = True
 
 while True:
     for event in pygame.event.get():
@@ -90,18 +110,28 @@ while True:
             sys.exit(0)
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
-                spaceship.vel_y -= 0.1
+                if control:
+                    spaceship.vel_y -= 0.1
             elif event.key == pygame.K_s:
-                spaceship.vel_y += 0.1
+                if control:
+                    spaceship.vel_y += 0.1
             elif event.key == pygame.K_a:
-                spaceship.vel_x -= 0.1
+                if control:
+                    spaceship.vel_x -= 0.1
             elif event.key == pygame.K_d:
-                spaceship.vel_x += 0.1
+                if control:
+                    spaceship.vel_x += 0.1
             elif event.key == pygame.K_h:
                 show_hm = not show_hm
+            elif event.key == pygame.K_p:
+                control = not control
             elif event.key == pygame.K_q:
                 sys.exit()
     screen.fill([0, 0, 0])
+    if not control:
+        angle=spaceship.avoid_objects(*asteroids)
+        spaceship.vel_x=-math.cos(math.radians(angle))
+        spaceship.vel_y=-math.sin(math.radians(angle))
     for o in game_objects:
         o.integrate()
     if show_hm:
