@@ -1,4 +1,5 @@
 import math
+import pygame
 
 frameRate = 30
 G = 6.6*(10**(-11))
@@ -49,14 +50,17 @@ class SpaceObject:
         
 
 class SpaceShip(SpaceObject):
-    z = float(0)
+    direct = 0
+    a = True
 
-p1 = SpaceObject([4.0,4.0], [4.0, 2.0], 40000000000, 4)
-p2 = SpaceObject([4.0,1.0], [10.0,10.0], 30000000000, 3)
+    def __init__(self, vel, pos, m, r, direct, a):
+        self.vel = vel
+        self.pos = pos
+        self.m = m
+        self.r = r
+        self.direct = direct
+        self.a = True
 
-p1.gravForce(p2)
-
-p1.displacement()
 
 
 
