@@ -1,7 +1,6 @@
 import math
 import sys
 import random
-from typing import Tuple
 
 import numpy as np
 import pygame
@@ -13,6 +12,9 @@ w = 512
 h = 512
 
 SPACESHIP_RADIUS = 20
+
+COLOURS = ((0x66, 0x2d, 0x91), (0x2e, 0x31, 0x92), (0x00, 0x92, 0x45),
+           (0x8c, 0xc6, 0x3f), (0x9e, 0x00, 0x5d), (0x88, 0xa8, 0x0d))
 
 
 class Spaceship(SpaceObjectState):
@@ -29,7 +31,8 @@ class Asteroid(SpaceObjectState):
     def __init__(self, li):
         super().__init__()
         self.radius = li[0]
-        self.colour = li[1]
+        #self.colour = li[1]
+        self.colour = random.choice(COLOURS)
         self.pos_x = li[2]
         self.pos_y = li[3]
         self.vel_x = random.choice((0.3, -0.3))
