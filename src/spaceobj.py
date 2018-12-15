@@ -12,6 +12,8 @@ class SpaceObjectState:
         self.radius = 0
         self.mass = 0
 
+        self.max_acc = .1
+
     def integrate(self):
         self.vel_x += self.acc_x
         self.vel_y += self.acc_y
