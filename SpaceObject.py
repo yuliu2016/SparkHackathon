@@ -23,28 +23,29 @@ class SpaceObject:
         global G
         global frameRate
         if(math.abs(self.pos[0] - sO2.pos[0])<0.1 and math.abs(self.pos[1] - sO2.pos[1])<0.1):
-            break
-    
-        distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
-        force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
-
-        #Calculate force
-        if(self.pos[0]>sO2.pos[0]):
-            if(self.pos[1]>sO2.pos[1]):
-                self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-            else:
-                self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+            print("")
         else:
-            if(self.pos[1]>sO2.pos[1]):
-                self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-            else:
-                self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+        
+            distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
+            force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
 
-        print(self.vel)
+            #Calculate force
+            if(self.pos[0]>sO2.pos[0]):
+                if(self.pos[1]>sO2.pos[1]):
+                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                else:
+                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+            else:
+                if(self.pos[1]>sO2.pos[1]):
+                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                else:
+                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+
+            print(self.vel)
 
     #Updates displacement
     def displacement(self):
