@@ -4,8 +4,8 @@ frameRate = 30
 G = 6.6*(10**(-11))
 
 class SpaceObject:
-    vel = [0.0, 0.0] #Velocity, first is magnitude, second is angle
-    pos = [0.0, 0.0] #Position, first is x, second is y
+    vel = [0.0, 0.0] #Velocity, first is x, second is y
+    pos = [0.0, 0.0] #position, first is x, second is y
     m = 0.0 #Mass
     r = 0.0 #Radius
 
@@ -15,36 +15,48 @@ class SpaceObject:
         self.m = m
         self.r = r
 
-    def gravForce(sO2):
+    #def collosion
+
+    def gravForce(self, sO2):
         global G
         global frameRate
-        distance = math.sqrt((pos[0]-sO2.pos[0])**2+(pos[1]-sO2.pos[1])**2) #Calcualte distance
+        distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
 
-        force = (G*m*s02.m)/(distance**2) #Calcualte magnitude of force
+        force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
 
         #Calculate force
-        if(pos[0]>sO2.pos[0]):
-            if(pos[1]>sO2.pos[1]):
-                vel[0] = (vel[0]-math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
-                vel[1] = (vel[1]-math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+        if(self.pos[0]>sO2.pos[0]):
+            if(self.pos[1]>sO2.pos[1]):
+                self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
             else:
-                vel[0] = (vel[0]-math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
-                vel[1] = (vel[1]+math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+                self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
         else:
-            if(pos[1]>sO2.pos[1]):
-                vel[0] = (vel[0]+math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
-                vel[1] = (vel[1]-math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
+            if(self.pos[1]>sO2.pos[1]):
+                self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
             else:
-                vel[0] = (vel[0]+math.cos(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
-                vel[1] = (vel[1]+math.sin(math.atan((pos[1]-sO2.pos[1])/(pos[0]-sO2.pos[0])))*force)/frameRate
-                
+                self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
 
-        
+        print(self.vel)
+
+    def displacement(self):
+        self.pos[0] = self.pos[0]+self.vel[0]/frameRate
+        self.pos[1] = self.pos[1]+self.vel[1]/frameRate
+        print(self.pos)
         
 
 class SpaceShip(SpaceObject):
     z = float(0)
-    
+
+p1 = SpaceObject([4.0,4.0], [4.0, 2.0], 40000000000, 4)
+p2 = SpaceObject([4.0,1.0], [10.0,10.0], 30000000000, 3)
+
+p1.gravForce(p2)
+
+p1.displacement()
 
 
 
