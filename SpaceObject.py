@@ -80,7 +80,7 @@ class SpaceSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.movex = 0
         self.movey = 0
-        img = pygame.image.load('/Users/victorma/Downloads/ship.png')
+        img = pygame.image.load('ship.png')
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.center = (self.rect.x / 2, self.rect.y / 2)
