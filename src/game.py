@@ -24,17 +24,15 @@ class Spaceship(SpaceObjectState):
 class RandomObject(SpaceObjectState):
     def __init__(self, li):
         super().__init__()
-
+        self.radius = li[0]
+        self.colour = li[1]
+        self.pos_x = li[2]
+        self.pos_y = li[3]
+        self.vel_x = random.choice((0.3, -0.3))
+        self.vel_y = random.choice((0.3, -0.3))
 
     def draw(self, surface):
         aac(surface, self.colour, [self.pos_x, self.pos_y], self.radius)
-
-    def collide(self, spaceship):
-        x_distance = abs(spaceship.pos_x - self.pos_x)
-        y_distance = abs(spaceship.pos_y - self.pos_y)
-        distance = math.sqrt(x_distance**2 + y_distance**2)
-        min_distance = self.radius + spaceship.radius
-        return distance <= min_distance
 
 
 pygame.init()
@@ -77,8 +75,15 @@ while True:
     for o in game_objects:
         o.integrate()
         o.draw(screen)
-        if isinstance(o, RandomObject) and o.collide(spaceship):
-            print("COLLISION: ABORTING EXECUTION OF PROGRAM")
-            sys.exit()
+        if isinstance(o, RandomObject):
+            if o.collide(spaceship):
+                print("COLLISION: ABORTING EXECUTION OF PROGRAM")
+                sys.exit()
+            if o.oob(w, h):
+                o.pos_x = random.choice((0, w))
+                if o.pos_x == 0:
+                    o.vel_x = 0.3
+                else:
+                    o.vel_x = -0.3
     pygame.display.flip()
     clock.tick(30)
