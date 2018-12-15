@@ -29,3 +29,14 @@ class SpaceObjectState:
 
     def draw(self, surface):
         pass
+
+    def collide(self, spaceobj):
+        x_distance = abs(spaceobj.pos_x - self.pos_x)
+        y_distance = abs(spaceobj.pos_y - self.pos_y)
+        distance = math.sqrt(x_distance**2 + y_distance**2)
+        min_distance = self.radius + spaceobj.radius
+        return distance <= min_distance
+
+    def oob(self, width, height):
+        return self.pos_x < 0 or self.pos_x > width or \
+               self.pos_y < 0 or self.pos_y > height
