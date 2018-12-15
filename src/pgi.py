@@ -1,6 +1,6 @@
 def aac(s, c, p, r):  # draws a circle
     import pygame.gfxdraw as gfx
-    gfx.filled_circle(s, p[0], p[1], r, c)
+    gfx.filled_circle(s, round(p[0]), round(p[1]), r, c)
 
 
 def aal(s, c, p1, p2):  # draws a line
