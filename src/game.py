@@ -24,7 +24,7 @@ class Spaceship(SpaceObjectState):
         mags = []
         angles = []
         for object in objects:
-            dist = math.sqrt((object.pos_x - self.pos_x) ** 2 + (object.pos_y - self.pos_y) ** 2)\
+            dist = math.sqrt((object.pos_x - self.pos_x) ** 2 + (object.pos_y - self.pos_y) ** 2) \
                    - self.radius - object.radius
             mags.append(1 / dist ** 2)
             angles.append(math.degrees(math.atan2(object.pos_y - self.pos_y, object.pos_x - self.pos_x)))
@@ -37,7 +37,6 @@ class Spaceship(SpaceObjectState):
         angle = math.degrees(math.atan2(y, x))
 
         return angle
-
 
 
 class Asteroid(SpaceObjectState):
@@ -61,8 +60,8 @@ clock = pygame.time.Clock()
 
 spaceship = Spaceship()
 spaceship.radius = SPACESHIP_RADIUS
-spaceship.pos_x = w // 2
-spaceship.pos_y = h - spaceship.radius * 2
+spaceship.pos_x = w // 2 + 30
+spaceship.pos_y = h // 3
 spaceship.vel_y = -0
 
 asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289], [15, [193, 153, 28], 143, 507],
@@ -74,34 +73,8 @@ asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289
                   [11, [15, 142, 155], 91, 248], [14, [185, 103, 27], 33, 148]]
 asteroids = [Asteroid(li) for li in asteroids_data]
 game_objects = [spaceship, *asteroids]
-
-
-def update_heat_map():
-    heat_map = np.zeros(shape=(w, h), dtype=np.float_)
-    surf2 = pygame.Surface((w, h))
-    surf2arr = pygame.surfarray.pixels2d(surf2)
-    as_len = len(asteroids)
-    for i in range(as_len):
-        for j in range(as_len):
-            base = asteroids[i]
-            target = asteroids[j]
-            dist = math.sqrt((target.pos_x - base.pos_x) ** 2 + (target.pos_y - base.pos_y) ** 2)
-            if dist > 128:
-                continue
-            r = max(dist, base.radius)
-            surf2.fill([0, 0, 0])
-            rr = round(r)
-            pygame.draw.circle(surf2, [0, 0, 1], (rr, rr), rr)
-            x1 = max(0, min(round(base.pos_x - r), w))
-            x2 = max(0, min(round(base.pos_x + r), w))
-            y1 = max(0, min(round(base.pos_y - r), h))
-            y2 = max(0, min(round(base.pos_y + r), h))
-            heat_map[x1:x2, y1:y2] += surf2arr[0:abs(x1 - x2), 0:abs(y1 - y2)] / r
-    heat_map = np.round(heat_map / heat_map.max() * (1 << 8)) * (1 << 8)
-    pygame.surfarray.blit_array(screen, heat_map)
-
-
-show_hm = False
+heat_map = np.zeros(shape=(w, h), dtype=np.float_)
+show_hm = True
 control = True
 
 while True:
@@ -128,26 +101,62 @@ while True:
             elif event.key == pygame.K_q:
                 sys.exit()
     screen.fill([0, 0, 0])
+    if show_hm:
+        surf2 = pygame.Surface((w, h))
+        surf2arr = pygame.surfarray.pixels2d(surf2)
+        as_len = len(asteroids)
+        for i in range(as_len):
+            for j in range(as_len):
+                base = asteroids[i]
+                target = asteroids[j]
+                dist = math.sqrt((target.pos_x - base.pos_x) ** 2 + (target.pos_y - base.pos_y) ** 2)
+                if dist > 128:
+                    continue
+                r = max(dist, base.radius)
+                surf2.fill([0, 0, 0])
+                rr = round(r)
+                pygame.draw.circle(surf2, [0, 0, 1], (rr, rr), rr)
+                x1 = max(0, min(round(base.pos_x - r), w))
+                x2 = max(0, min(round(base.pos_x + r), w))
+                y1 = max(0, min(round(base.pos_y - r), h))
+                y2 = max(0, min(round(base.pos_y + r), h))
+                heat_map[x1:x2, y1:y2] += surf2arr[0:abs(x1 - x2), 0:abs(y1 - y2)] / r
+        heat_map = heat_map / heat_map.max()
+        pygame.surfarray.blit_array(screen, np.round(heat_map * (1 << 8)) * (1 << 16))
+        spaceship_vel = max(spaceship.mag_vel(), 150)
+        min_deg = 0
+        min_risk = 10000
+        for i in range(24):
+            deg = i * 15
+            x = spaceship.pos_x + math.cos(math.radians(deg)) * spaceship_vel
+            y = spaceship.pos_y + math.sin(math.radians(deg)) * spaceship_vel
+            px = heat_map[max(0, min(round(x), w)), max(0, min(round(y), h))]
+            if px < min_risk:
+                min_risk = px
+                min_deg = deg
+        # spaceship.acc_x = math.cos(math.radians(min_deg)) * 0.01
+        # spaceship.acc_y = math.sin(math.radians(min_deg)) * 0.01
+        pygame.draw.aaline(screen, [0, 255, 0], (spaceship.pos_x, spaceship.pos_y),
+                           (spaceship.pos_x + math.cos(math.radians(min_deg)) * 150,
+                            spaceship.pos_y + math.sin(math.radians(min_deg)) * 150))
+
     if not control:
-        angle=spaceship.avoid_objects(*asteroids)
-        spaceship.vel_x=-math.cos(math.radians(angle))
-        spaceship.vel_y=-math.sin(math.radians(angle))
+        angle = spaceship.avoid_objects(*asteroids)
+        spaceship.vel_x = -math.cos(math.radians(angle))
+        spaceship.vel_y = -math.sin(math.radians(angle))
+
     for o in game_objects:
         o.integrate()
-    if show_hm:
-        update_heat_map()
-    else:
-        for o in game_objects:
-            o.draw(screen)
-            if isinstance(o, Asteroid):
-                if o.collide(spaceship):
-                    print("COLLISION: ABORTING EXECUTION OF PROGRAM")
-                    sys.exit()
-                if o.oob(w, h):
-                    o.pos_x = random.choice((0, w))
-                    if o.pos_x == 0:
-                        o.vel_x = 0.3
-                    else:
-                        o.vel_x = -0.3
+        o.draw(screen)
+        if isinstance(o, Asteroid):
+            # if o.collide(spaceship):
+            #     print("COLLISION: ABORTING EXECUTION OF PROGRAM")
+            #     sys.exit()
+            if o.oob(w, h):
+                o.pos_x = random.choice((0, w))
+                if o.pos_x == 0:
+                    o.vel_x = 0.3
+                else:
+                    o.vel_x = -0.3
     pygame.display.flip()
     clock.tick(30)
