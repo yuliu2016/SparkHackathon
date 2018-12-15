@@ -22,8 +22,10 @@ class SpaceObject:
     def gravForce(self, sO2):
         global G
         global frameRate
+        if(math.abs(self.pos[0] - sO2.pos[0])<0.1 and math.abs(self.pos[1] - sO2.pos[1])<0.1):
+            break
+    
         distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
-
         force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
 
         #Calculate force
@@ -86,10 +88,14 @@ while True:
 
 while True:
     for astroid in aD:
-        ship.gravForce(astroid)
+        astroid.displacement()
+        for atroid2 in aD:
+            astroid.gravForce(astroid2)
+            
     ship.displacement()
+    for astroid in aD:
+        ship.gravForce(astroid)
+
     print(ship.pos)
     time.sleep(1/frameRate)
-    
-    
-    
+
