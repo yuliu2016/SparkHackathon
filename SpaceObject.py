@@ -5,13 +5,8 @@ import time
 frameRate = 30
 G = 6.6*(10**(-11))
 
-w = 512
-h = 512
 
-pygame.init()
-screen = pygame.display.set_mode([w, h])
 
-clock = pygame.time.Clock()
 
 class SpaceObject:
     vel = [0.0, 0.0] #Velocity, first is x, second is y
@@ -80,7 +75,7 @@ class SpaceSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.movex = 0
         self.movey = 0
-        img = pygame.image.load('ship.png')
+        img = pygame.image.load('/Users/victorma/Downloads/ship.png')
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.center = (self.rect.x / 2, self.rect.y / 2)
@@ -99,7 +94,6 @@ class SpaceSprite(pygame.sprite.Sprite):
 
 
 ship = SpaceShip([0,0], [0,0], kg, m, 0, False)
-sprite = SpaceSprite (0, 0)
 aD = []
 
 while True:
@@ -117,8 +111,7 @@ while True:
     aD.append(SpaceObject([a, b],[c, d], e, f))
 
 
-        
-        
+
 while True:
     for asteroid in aD:
         asteroid.displacement()
@@ -131,5 +124,4 @@ while True:
 
     print(ship.pos)
     time.sleep(1/frameRate)
-    pygame.display.flip()
 
