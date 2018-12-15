@@ -1,11 +1,11 @@
 import math
+import os
 import random
 import sys
-import os
+from random import randint
 
 import numpy as np
 import pygame
-
 from SpaceObject import *
 from pgi import *
 from spaceobj import SpaceObjectState
@@ -83,36 +83,48 @@ class Spaceship(SpaceObjectState):
         angle = math.degrees(math.atan2(y, x))
 
         return angle
+
     def gravForce(self, sO2):
         global G
         global frameRate
-        if(math.sqrt(abs(self.pos[0] - sO2.pos[0])**2 + abs(self.pos[1] - sO2.pos[1])**2) <5):
+        if (math.sqrt(abs(self.pos[0] - sO2.pos[0]) ** 2 + abs(self.pos[1] - sO2.pos[1]) ** 2) < 5):
             True
         else:
 
-            distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
-            force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
+            distance = math.sqrt(
+                (self.pos[0] - sO2.pos[0]) ** 2 + (self.pos[1] - sO2.pos[1]) ** 2)  # Calcualte distance
+            force = (G * self.m * sO2.m) / (distance ** 2)  # Calcualte magnitude of force
 
-            #Calculate force
-            if(self.pos[0]>sO2.pos[0]):
-                if(self.pos[1]>sO2.pos[1]):
-                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+            # Calculate force
+            if (self.pos[0] > sO2.pos[0]):
+                if (self.pos[1] > sO2.pos[1]):
+                    self.vel[0] = (self.vel[0] - math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
+                    self.vel[1] = (self.vel[1] - math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
                 else:
-                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[0] = (self.vel[0] - math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
+                    self.vel[1] = (self.vel[1] + math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
             else:
-                if(self.pos[1]>sO2.pos[1]):
-                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                if (self.pos[1] > sO2.pos[1]):
+                    self.vel[0] = (self.vel[0] + math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
+                    self.vel[1] = (self.vel[1] - math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
                 else:
-                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
-                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)
+                    self.vel[0] = (self.vel[0] + math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
+                    self.vel[1] = (self.vel[1] + math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m)
+
 
 asteroids1 = []
 
 while True:
-    print("Input velocity x, velocity y, position x, position y, mass, and radius of the asteroid in that order. Enter a letter to quit.")
+    print(
+        "Input velocity x, velocity y, position x, position y, mass, and radius of the asteroid in that order. Enter a letter to quit.")
     try:
         a = float(input())
         b = float(input())
@@ -123,10 +135,12 @@ while True:
     except:
         break
 
-    asteroids1.append(SpaceObject([a, b],[c, d], e, f))
+    asteroids1.append(SpaceObject([a, b], [c, d], e, f))
+
 
 def converter(p):
     return (p.pos[0], p.pos[1], p.vel[0], p.vel[1], 0, 0, p.r, p.m)
+
 
 class Asteroid(SpaceObjectState):
     def __init__(self, li):
@@ -138,32 +152,44 @@ class Asteroid(SpaceObjectState):
         self.pos_y = li[3]
         self.vel_x = random.choice((0.3, -0.3))
         self.vel_y = random.choice((0.3, -0.3))
-    colour = [200,200,200]
+
+    colour = [200, 200, 200]
+
     def gravForce(self, sO2):
         global G
         global frameRate
-        if(math.sqrt(abs(self.pos[0] - sO2.pos[0])**2 + abs(self.pos[1] - sO2.pos[1])**2) <5):
+        if (math.sqrt(abs(self.pos[0] - sO2.pos[0]) ** 2 + abs(self.pos[1] - sO2.pos[1]) ** 2) < 5):
             True
         else:
 
-            distance = math.sqrt((self.pos[0]-sO2.pos[0])**2+(self.pos[1]-sO2.pos[1])**2) #Calcualte distance
-            force = (G*self.m*sO2.m)/(distance**2) #Calcualte magnitude of force
+            distance = math.sqrt(
+                (self.pos[0] - sO2.pos[0]) ** 2 + (self.pos[1] - sO2.pos[1]) ** 2)  # Calcualte distance
+            force = (G * self.m * sO2.m) / (distance ** 2)  # Calcualte magnitude of force
 
-            #Calculate force
-            if(self.pos[0]>sO2.pos[0]):
-                if(self.pos[1]>sO2.pos[1]):
-                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m) *100000
-                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
+            # Calculate force
+            if (self.pos[0] > sO2.pos[0]):
+                if (self.pos[1] > sO2.pos[1]):
+                    self.vel[0] = (self.vel[0] - math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
+                    self.vel[1] = (self.vel[1] - math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
                 else:
-                    self.vel[0] = (self.vel[0]-math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
-                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
+                    self.vel[0] = (self.vel[0] - math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
+                    self.vel[1] = (self.vel[1] + math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
             else:
-                if(self.pos[1]>sO2.pos[1]):
-                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
-                    self.vel[1] = (self.vel[1]-math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
+                if (self.pos[1] > sO2.pos[1]):
+                    self.vel[0] = (self.vel[0] + math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
+                    self.vel[1] = (self.vel[1] - math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
                 else:
-                    self.vel[0] = (self.vel[0]+math.cos(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
-                    self.vel[1] = (self.vel[1]+math.sin(math.atan((self.pos[1]-sO2.pos[1])/(self.pos[0]-sO2.pos[0])))*force/frameRate/self.m)*100000
+                    self.vel[0] = (self.vel[0] + math.cos(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
+                    self.vel[1] = (self.vel[1] + math.sin(math.atan(
+                        (self.pos[1] - sO2.pos[1]) / (self.pos[0] - sO2.pos[0]))) * force / frameRate / self.m) * 100000
+
     def draw(self, surface):
         aac(surface, self.colour, [self.pos_x, self.pos_y], self.radius)
 
@@ -177,13 +203,10 @@ spaceship.pos_x = w // 2 + 30
 spaceship.pos_y = h // 3
 spaceship.vel_y = -0
 
-asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289], [15, [193, 153, 28], 143, 507],
-                  [13, [184, 140, 39], 331, 238], [14, [241, 66, 166], 362, 500], [15, [216, 108, 50], 368, 112],
-                  [14, [45, 123, 51], 245, 278], [15, [11, 137, 14], 217, 166], [11, [242, 123, 41], 217, 92],
-                  [11, [122, 123, 59], 155, 269], [15, [191, 7, 169], 444, 34], [14, [87, 240, 8], 225, 406],
-                  [15, [92, 217, 163], 490, 317], [13, [21, 252, 245], 346, 365], [10, [128, 230, 44], 44, 189],
-                  [12, [214, 127, 149], 481, 136], [12, [205, 148, 66], 5, 449], [13, [20, 81, 101], 187, 509],
-                  [11, [15, 142, 155], 91, 248], [14, [185, 103, 27], 33, 148]]
+asteroids_data = [
+    [randint(10, 25), [randint(0, 255), randint(0, 255), randint(0, 255)], randint(0, 512), randint(0, 512)]
+    for _ in
+    range(15)]
 asteroids = [Asteroid(li) for li in asteroids_data]
 game_objects = [spaceship, *asteroids]
 heat_map = np.zeros(shape=(w, h), dtype=np.float_)
