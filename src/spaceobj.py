@@ -12,9 +12,12 @@ class SpaceObjectState:
         self.radius = 0
         self.mass = 0
 
-        self.max_acc = .1
-
     def integrate(self):
+        self.vel_x=min(self.vel_x,.7)
+        self.vel_y=min(self.vel_y,.7)
+        self.acc_x=min(self.acc_x,.5)
+        self.acc_y=min(self.acc_y,.5)
+
         self.vel_x += self.acc_x
         self.vel_y += self.acc_y
         self.pos_x += self.vel_x
@@ -40,5 +43,5 @@ class SpaceObjectState:
         return distance <= min_distance
 
     def oob(self, width, height):
-        return self.pos_x < 0 or self.pos_x > width or \
-               self.pos_y < 0 or self.pos_y > height
+        return self.pos_x+self.radius < 0 or self.pos_x-self.radius > width or \
+               self.pos_y+self.radius < 0 or self.pos_y-self.radius > height
