@@ -5,8 +5,8 @@ import sys
 import numpy as np
 import pygame
 
-from src.pgi import *
-from src.spaceobj import SpaceObjectState
+from pgi import *
+from spaceobj import SpaceObjectState
 
 w = 512
 h = 512
@@ -18,10 +18,33 @@ COLOURS = ((0x66, 0x2d, 0x91), (0x2e, 0x31, 0x92), (0x00, 0x92, 0x45),
 
 
 class Spaceship(SpaceObjectState):
+    def __init__(self):
+        super().__init__()
+        self.last_x = 0
+        self.last_y = 0
+
+    def integrate(self):
+        self.last_x = self.pos_x
+        self.last_y = self.pos_y
+        super().integrate()
+
     def draw(self, surface):
         aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius)
         aac(surface, [192, 192, 255], [self.pos_x, self.pos_y], self.radius // 4 * 3)
         aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius // 4 * 2)
+
+        # fire
+        font = pygame.font.SysFont("Comic Sans MS", 24)
+        rendered = font.render("fire", True, (0xFD, 0x4E, 0x01))
+
+        # angle
+        angle = -math.degrees(math.atan((self.pos_x - self.last_x) / (self.pos_y / self.last_y)))
+        rotated = pygame.transform.rotate(rendered, angle)
+
+        rendered_rect = rotated.get_rect()
+        rendered_rect.x = self.pos_x - self.radius
+        rendered_rect.y = self.pos_y + self.radius
+        screen.blit(rotated, rendered_rect)
 
     def past_top(self):
         return self.pos_y < 0
@@ -74,7 +97,7 @@ def update_heat_map():
             base = asteroids[i]
             target = asteroids[j]
             dist = math.sqrt((target.pos_x - base.pos_x) ** 2 + (target.pos_y - base.pos_y) ** 2)
-            if dist > 128:
+            if dist > 72:
                 continue
             r = max(dist, base.radius)
             surf2.fill([0, 0, 0])
