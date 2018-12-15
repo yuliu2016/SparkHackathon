@@ -1,6 +1,7 @@
 import math
 import random
 import sys
+import os
 
 import numpy as np
 import pygame
@@ -15,9 +16,18 @@ SPACESHIP_RADIUS = 20
 
 COLOURS = ((0x66, 0x2d, 0x91), (0x2e, 0x31, 0x92), (0x00, 0x92, 0x45),
            (0x8c, 0xc6, 0x3f), (0x9e, 0x00, 0x5d), (0x88, 0xa8, 0x0d))
+RES = "res"
 
 
 class Spaceship(SpaceObjectState):
+    spaceship_img = pygame.image.load(os.path.join(RES, "spaceship.png"))
+    fire_imgs = (
+        pygame.image.load(os.path.join(RES, "fire1.png")),
+        pygame.image.load(os.path.join(RES, "fire2.png")),
+        pygame.image.load(os.path.join(RES, "fire3.png")),
+        pygame.image.load(os.path.join(RES, "fire4.png")),
+    )
+
     def __init__(self):
         super().__init__()
         self.last_x = 0
@@ -29,22 +39,28 @@ class Spaceship(SpaceObjectState):
         super().integrate()
 
     def draw(self, surface):
-        aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius)
-        aac(surface, [192, 192, 255], [self.pos_x, self.pos_y], self.radius // 4 * 3)
-        aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius // 4 * 2)
+        aac(surface, [54, 54, 54], [self.pos_x, self.pos_y], self.radius)
+        #aac(surface, [192, 192, 255], [self.pos_x, self.pos_y], self.radius // 4 * 3)
+        #aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius // 4 * 2)
 
         # fire
-        font = pygame.font.SysFont("Comic Sans MS", 24)
-        rendered = font.render("fire", True, (0xFD, 0x4E, 0x01))
+        #font = pygame.font.SysFont("Comic Sans MS", 24)
+        #rendered = font.render("fire", True, (0xFD, 0x4E, 0x01))
+        fire_img = random.choice(self.fire_imgs)
 
-        # angle
-        angle = -math.degrees(math.atan((self.pos_x - self.last_x) / (self.pos_y / self.last_y)))
-        rotated = pygame.transform.rotate(rendered, angle)
+        # anglea
+        angle = math.atan((self.pos_x - self.last_x) / (self.pos_y / self.last_y))
+        pygame_angle = -math.degrees(angle)
+        rotated_fire = pygame.transform.rotate(fire_img, pygame_angle)
+        rotated_img = pygame.transform.rotate(self.spaceship_img, pygame_angle)
 
-        rendered_rect = rotated.get_rect()
-        rendered_rect.x = self.pos_x - self.radius
-        rendered_rect.y = self.pos_y + self.radius
-        screen.blit(rotated, rendered_rect)
+        new_x = self.pos_x - math.sin(angle) * self.radius
+        new_y = self.pos_y + math.cos(angle) * self.radius
+        rendered_rect = rotated_fire.get_rect(center=(new_x, new_y))
+        #rendered_rect.x = self.pos_x - self.radius
+        spaceship_rect = rotated_img.get_rect(center=(self.pos_x, self.pos_y))
+        screen.blit(rotated_img, spaceship_rect)
+        screen.blit(rotated_fire, rendered_rect)
 
     def past_top(self):
         return self.pos_y < 0
