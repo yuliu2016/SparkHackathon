@@ -21,6 +21,9 @@ class Spaceship(SpaceObjectState):
         aac(surface, [192, 192, 255], [self.pos_x, self.pos_y], self.radius // 4 * 3)
         aac(surface, [255, 255, 255], [self.pos_x, self.pos_y], self.radius // 4 * 2)
 
+    def past_top(self):
+        return self.pos_y < 0
+
 
 class Asteroid(SpaceObjectState):
     def __init__(self, li):
@@ -44,7 +47,7 @@ spaceship = Spaceship()
 spaceship.radius = SPACESHIP_RADIUS
 spaceship.pos_x = w // 2
 spaceship.pos_y = h - spaceship.radius * 2
-spaceship.vel_y = -0
+spaceship.vel_y = 0
 
 
 asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289], [15, [193, 153, 28], 143, 507],
@@ -71,7 +74,10 @@ for i in range(w):
 
 heat_map = heat_map / heat_map.max() * (1 << 24)
 
+win_font = pygame.font.SysFont("Comic Sans MS", 28)
+
 show_hm = False
+win = False
 
 while True:
     for event in pygame.event.get():
@@ -88,6 +94,16 @@ while True:
                 spaceship.vel_x += 0.1
             elif event.key == pygame.K_h:
                 show_hm = not show_hm
+            elif win and event.key == pygame.K_r:
+                win = False
+                # restart
+                spaceship.radius = SPACESHIP_RADIUS
+                spaceship.pos_x = w // 2
+                spaceship.pos_y = h - spaceship.radius * 2
+                spaceship.vel_y = 0
+                spaceship.vel_x = 0
+                asteroids = [Asteroid(li) for li in asteroids_data]
+                game_objects = [spaceship, *asteroids]
             elif event.key == pygame.K_q:
                 sys.exit()
     screen.fill([0, 0, 0])
@@ -95,7 +111,7 @@ while True:
         o.integrate()
     if show_hm:
         pygame.surfarray.blit_array(screen, heat_map)
-    else:
+    elif not win:
         for o in game_objects:
             o.draw(screen)
             if isinstance(o, Asteroid):
@@ -104,9 +120,19 @@ while True:
                     sys.exit()
                 if o.oob(w, h):
                     o.pos_x = random.choice((0, w))
+                    o.pos_y = random.randint(0, h)
                     if o.pos_x == 0:
                         o.vel_x = 0.3
                     else:
                         o.vel_x = -0.3
+
+    if spaceship.past_top():
+        win = True
+
+    if win:
+        win_text = win_font.render("You win!!! Press R to play again", True, (0, 255, 0))
+        win_rect = win_text.get_rect()
+        screen.blit(win_text, win_rect)
+
     pygame.display.flip()
     clock.tick(30)
