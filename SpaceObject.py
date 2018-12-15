@@ -86,6 +86,30 @@ while True:
 
     aD.append(SpaceObject([a, b],[c, d], e, f))
 
+class SpaceSprite(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.movex = 0
+        self.movey = 0
+        img = pygame.image.load('ship.png').convert_alpha()
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.rect.x / 2, self.rect.y / 2)
+        self.rect.x = x
+        self.rect.y = y
+
+    def control(self, x, y):
+        self.movex+=x
+        self.movey+=y
+
+    
+    def update (self, angle):
+        self.image = pygame.transform.rotate(img, angle)
+        self.rectx += self.movex
+        self.recty += self.movey
+        
+        
+        
 while True:
     for astroid in aD:
         astroid.displacement()
