@@ -1,12 +1,12 @@
 import math
-import sys
 import random
+import sys
 
 import numpy as np
 import pygame
 
-from pgi import *
-from spaceobj import SpaceObjectState
+from src.pgi import *
+from src.spaceobj import SpaceObjectState
 
 w = 512
 h = 512
@@ -41,6 +41,7 @@ class Asteroid(SpaceObjectState):
     def draw(self, surface):
         aac(surface, self.colour, [self.pos_x, self.pos_y], self.radius)
 
+
 pygame.init()
 screen = pygame.display.set_mode([w, h])
 
@@ -52,7 +53,6 @@ spaceship.pos_x = w // 2
 spaceship.pos_y = h - spaceship.radius * 2
 spaceship.vel_y = 0
 
-
 asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289], [15, [193, 153, 28], 143, 507],
                   [13, [184, 140, 39], 331, 238], [14, [241, 66, 166], 362, 500], [15, [216, 108, 50], 368, 112],
                   [14, [45, 123, 51], 245, 278], [15, [11, 137, 14], 217, 166], [11, [242, 123, 41], 217, 92],
@@ -63,19 +63,31 @@ asteroids_data = [[15, [168, 39, 151], 307, 381], [10, [119, 224, 229], 471, 289
 asteroids = [Asteroid(li) for li in asteroids_data]
 game_objects = [spaceship, *asteroids]
 
-heat_map = np.zeros(shape=(w, h), dtype=np.float_)
 
+def update_heat_map():
+    heat_map = np.zeros(shape=(w, h), dtype=np.float_)
+    surf2 = pygame.Surface((w, h))
+    surf2arr = pygame.surfarray.pixels2d(surf2)
+    as_len = len(asteroids)
+    for i in range(as_len):
+        for j in range(as_len):
+            base = asteroids[i]
+            target = asteroids[j]
+            dist = math.sqrt((target.pos_x - base.pos_x) ** 2 + (target.pos_y - base.pos_y) ** 2)
+            if dist > 128:
+                continue
+            r = max(dist, base.radius)
+            surf2.fill([0, 0, 0])
+            rr = round(r)
+            pygame.draw.circle(surf2, [0, 0, 1], (rr, rr), rr)
+            x1 = max(0, min(round(base.pos_x - r), w))
+            x2 = max(0, min(round(base.pos_x + r), w))
+            y1 = max(0, min(round(base.pos_y - r), h))
+            y2 = max(0, min(round(base.pos_y + r), h))
+            heat_map[x1:x2, y1:y2] += surf2arr[0:abs(x1 - x2), 0:abs(y1 - y2)] / r
+    heat_map = np.round(heat_map / heat_map.max() * (1 << 8)) * (1 << 8)
+    pygame.surfarray.blit_array(screen, heat_map)
 
-for i in range(w):
-    for j in range(h):
-        s = 0
-        for asteroid in asteroids:
-            k = math.sqrt((i - asteroid.pos_x) ** 2 + (j - asteroid.pos_y) ** 2)
-            if k:
-                s += 1 / k ** 2
-        heat_map[i, j] = s
-
-heat_map = heat_map / heat_map.max() * (1 << 24)
 
 win_font = pygame.font.SysFont("Comic Sans MS", 28)
 
@@ -113,7 +125,7 @@ while True:
     for o in game_objects:
         o.integrate()
     if show_hm:
-        pygame.surfarray.blit_array(screen, heat_map)
+        update_heat_map()
     elif not win:
         for o in game_objects:
             o.draw(screen)
