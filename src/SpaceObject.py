@@ -1,4 +1,6 @@
-    vel = [0.0, 0.0] #Velocity, first is x, second is y
+import math
+
+vel = [0.0, 0.0] #Velocity, first is x, second is y
     pos = [0.0, 0.0] #position, first is x, second is y
     m = 0.0 #Mass
     r = 0.0 #Radius
