@@ -1,6 +1,6 @@
 import math
 import sys
-import math
+import random
 from typing import Tuple
 
 import numpy as np
@@ -98,7 +98,7 @@ while True:
     else:
         for o in game_objects:
             o.draw(screen)
-            if isinstance(o, RandomObject):
+            if isinstance(o, Asteroid):
                 if o.collide(spaceship):
                     print("COLLISION: ABORTING EXECUTION OF PROGRAM")
                     sys.exit()
